@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <modules>
+  	<Mustback_Spotprice>
+  		<version>0.1.0</version>
+  	</Mustback_Spotprice>
+  </modules>	
+  <global>
+    <models>
+        <spotprice>
+             <class>Mustback_Spotprice_Model</class>
+             <resourceModel>spotprice_mysql4</resourceModel>
+        </spotprice>
+        <spotprice_mysql4>
+                <class>Mustback_Spotprice_Model_Mysql4</class>
+                <entities>
+                    <feed>
+                        <table>feed_price</table>
+                    </feed>
+                </entities>
+            </spotprice_mysql4>
+    </models>
+    <!--resources>
+            <spotprice_setup>
+                <setup>
+                    <module>Mustback_Spotprice</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </spotprice_setup>
+            <spotprice_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </spotprice_write>
+            <spotprice_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </spotprice_read>
+        </resources -->
+    <!-- Observers Zone -->
+    <events>
+      <catalog_product_save_after>
+        <observers>
+          <Mustback_Spotprice_Model_Observer>
+            <type>singleton</type>
+            <class>Mustback_Spotprice_Model_Observer</class>
+            <method>updatePrice</method>
+          </Mustback_Spotprice_Model_Observer>
+        </observers>
+      </catalog_product_save_after>     
+    </events>
+  </global>
+</config>

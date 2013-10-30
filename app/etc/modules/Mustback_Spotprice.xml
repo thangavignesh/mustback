@@ -1,1 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<config>
+  <modules>
+    <Mustback_Spotprice>
+      <codePool>local</codePool>
+      <active>true</active>
+    </Mustback_Spotprice>
+  </modules>
+</config>
