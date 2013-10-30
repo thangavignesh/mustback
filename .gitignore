@@ -3,6 +3,7 @@ var/cache
 var/session
 var/locks
 var/reports
+.htaccess
 =======
 .modgit/
 app/code/community/Find/
