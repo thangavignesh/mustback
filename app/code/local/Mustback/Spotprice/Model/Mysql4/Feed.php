@@ -3,7 +3,6 @@
 	{
 		public function _construct()
 		{
-			parent::__construct();
 			$this->_init('spotprice/feed', 'feed_id');
 		}
 		
