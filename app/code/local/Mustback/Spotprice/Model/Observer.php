@@ -1,7 +1,7 @@
 <?php
 	class Mustback_Spotprice_Model_Observer
 	{
-		public function __construct()
+		public function _construct()
 		{
 			
 		}
@@ -21,29 +21,34 @@
 			$metalType = $product->getMetalType();
 			$metalTypeName = $product->getAttributeText("metal_type");
 			$weight = $product->getWeight();
-			$feeds = Mage::getResourceModel('spotprice/feed_collection');
-			$feeds->addFieldToFilter('metal_name', $metalTypeName);
-			$feeds->load();
+			$feed = Mage::getModel('spotprice/feed')->getCollection()
+					 ->addFieldToFilter('metal_name', $metalTypeName)
+					 ->setOrder('create_time', 'desc')
+			         ->setCurPage(1)
+					 ->setPageSize(1);
+			$feedData = $feed->getData();
+			#Get metal recent price from feed_price table.
+			$metalPrice = $feedData[0]["value"];        
+			$manufacturingCost = $product->getManufacturingCost();
+			$newCost = ( $weight * $metalPrice ) + $manufacturingCost;
 			
-					
-			
+			#Save the new calculated cost.
+			$product->setPriceView($newCost)
+						  ->save();
+						
 			print "<pre>";
 			print "Metal type: $metalType <br>";
 			print "Weight: $weight <br>";
 			print "Metal Type: $metalTypeName <br>";
-			if($feeds->getFirstItem())
-			{
-				$feed = $feeds->getFirstItem();
-				print $feed->getValue();
-			}
-			else
-			{
-				print "No feed list for the metal $metalTypeName";
-			}
-				
+			print "Metal price: $metalPrice<br>";
+			print "Manufacturing Cost: $manufacturingCost<br>";
+			print "New Cost: $newCost<br>";
+			print_r($feed->getData());
+			print "End";	
 			print "</pre>";
+			#exit(0);
 			
-			exit(0);
+			
 			
 			$product->setPrice(($weight * 10));
 			return $this;

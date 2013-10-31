@@ -20,15 +20,15 @@
                 </entities>
             </spotprice_mysql4>
     </models>
-    <!--resources>
-            <spotprice_setup>
+    <resources>
+            <!-- spotprice_setup>
                 <setup>
                     <module>Mustback_Spotprice</module>
                 </setup>
                 <connection>
                     <use>core_setup</use>
                 </connection>
-            </spotprice_setup>
+            </spotprice_setup -->
             <spotprice_write>
                 <connection>
                     <use>core_write</use>
@@ -39,7 +39,7 @@
                     <use>core_read</use>
                 </connection>
             </spotprice_read>
-        </resources -->
+        </resources>
     <!-- Observers Zone -->
     <events>
       <catalog_product_save_after>
