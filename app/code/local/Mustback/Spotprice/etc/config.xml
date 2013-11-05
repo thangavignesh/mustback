@@ -42,15 +42,15 @@
         </resources>
     <!-- Observers Zone -->
     <events>
-      <catalog_product_save_after>
+      <catalog_product_save_before>
         <observers>
           <Mustback_Spotprice_Model_Observer>
             <type>singleton</type>
             <class>Mustback_Spotprice_Model_Observer</class>
-            <method>updatePrice</method>
+            <method>updateOIPriceCatBfSave</method>
           </Mustback_Spotprice_Model_Observer>
         </observers>
-      </catalog_product_save_after>     
+      </catalog_product_save_before>     
     </events>
   </global>
 </config>
