@@ -63,14 +63,15 @@ try {
             exit;
         }
     }
-
     Mage::getConfig()->init()->loadEventObservers('crontab');
     Mage::app()->addEventArea('crontab');
     if ($isShellDisabled) {
         Mage::dispatchEvent('always');
         Mage::dispatchEvent('default');
+        Mage::log("Cron run-shell disabled");
     } else {
         Mage::dispatchEvent($cronMode);
+        Mage::log("Cron run");
     }
 } catch (Exception $e) {
     Mage::printException($e);
