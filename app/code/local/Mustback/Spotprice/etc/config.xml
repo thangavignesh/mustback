@@ -52,5 +52,20 @@
         </observers>
       </catalog_product_save_before>     
     </events>
-  </global>
+    </global>
+    <!-- Cronjob Zone -->
+    <crontab>
+    	<jobs>
+    		<mustback_spotprice>
+    			<schedule>
+    				<!-- Job will run on every day 1 AM and 4 PM -->
+    				<cron_expr>00 1,16 * * *</cron_expr>
+    			</schedule>
+    			<run>
+    				<model>spotprice/observer::updateAllPriceCJob</model>
+    			</run>
+    		</mustback_spotprice>
+    	</jobs>
+    </crontab>
+  
 </config>
