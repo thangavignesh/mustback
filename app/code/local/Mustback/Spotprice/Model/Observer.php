@@ -1,9 +1,13 @@
 <?php
 	class Mustback_Spotprice_Model_Observer
 	{
-		public function _construct()
+		const UAP_PROCESS_NAME = 'updateAllPriceCJob';
+		private $indexProcess;
+		
+		public function __construct()
 		{
-			
+			$this->indexProcess = new Mage_Index_Model_Process();
+			$this->indexProcess->setId(self::UAP_PROCESS_NAME);
 		}
 		
 		/**
@@ -13,16 +17,62 @@
 		 */
 		public function updateOIPriceCatBfSave($observer)
 		{
-			error_reporting(E_ALL);
-			ini_set( 'display_errors','1');
 			$event = $observer->getEvent();
 			$product = $event->getProduct();
-			
-			#call the spot price business function
-			$product = $this->__applySpotPrice($product);
+			if($product->getTypeId() == 'simple')
+			{
+				#call the spot price business function
+				$product = $this->__applySpotPrice($product);
+			}
 						
 			return $this;
 		}
+		
+		/**
+		 * Applies the spot price on the final price to all products.
+		 * @return  Mustback_Spotprice_Model_Observer
+		 */
+		
+		 public function updateAllPriceCJob()
+		 {
+		 	error_reporting(E_ALL);
+		 	ini_set( 'display_errors','1');
+		 	$result = true;
+		 	if($this->indexProcess->isLocked())
+		 	{
+		 		$msg = sprintf("Another process (%s) is already running.", SELF::UAP_PROCESS_NAME);
+		 		Mage::log($msg);
+		 		$result = false;
+		    }
+		    else
+		    {
+		    	#Create a semaphore
+		    	$this->indexProcess->lockAndBlock();
+		    	Mage::log("updateAllPriceCJob initiated");
+		        
+		    	#Load all products
+		 		$products = Mage::getResourceModel('catalog/product_collection')
+		 		->addAttributeToSelect('*')
+		 		->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED) ) // status: 1=enabled, 2=disabled
+		 		->setOrder('created_at', 'desc');
+		    	
+		 		$productIds = $products->getAllIds();
+		 				 		
+		 		foreach($productIds as $productId)
+		 		{
+			 		$product = Mage::getModel('catalog/product')->load($productId);
+		 			$this->__applySpotPrice($product);
+		 			$msg = sprintf("Id: %s ->Name: %s ->Price: %s", $product->getId(), $product->getName(), $product->getPrice());
+		 			Mage::log( $msg );
+		 		}
+		 		#Relax the created semaphore
+		 	    $this->indexProcess->unlock();
+		 		Mage::log("updateAllPriceCJob completed");
+		    }
+		    
+		    return $result;
+		 }
+		
 
 		
 		/* Business Functions Begin*/
@@ -50,7 +100,7 @@
 				$metalSpotPriceGram = $metalSpotPriceOunce / 31.1034768; //1 troy ounce = 31.1034768 grams
 				
 				#Spot price formula
-				$calculatedSpotPrice = ( $itemWeight * $metalSpotPriceGram ) + $itemManufacturingCost;
+				$calculatedSpotPrice = sprintf( "%0.2f", ( $itemWeight * $metalSpotPriceGram ) + $itemManufacturingCost );
 				
 				#Save the calculated price
 				$item->setPrice($calculatedSpotPrice);
